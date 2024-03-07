@@ -59,7 +59,6 @@ xor_neuron = NeuralNetwork(
         )
     ],
 )
-my_neuron = Neuron(weights=np.array([-6.3, 4, 3]), bias=3.1)
 
 
 class SingleLayerPerception:
