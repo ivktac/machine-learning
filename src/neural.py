@@ -1,11 +1,5 @@
 import numpy as np
 from typing import Callable
-from enum import Enum
-
-
-class ActivationFunction(Enum):
-    IDENTITY = "identity"
-    STEP = "step"
 
 
 class Neuron:
@@ -14,32 +8,16 @@ class Neuron:
         weights: np.ndarray,
         bias: float = 0.0,
         threshold: float = 0.0,
-        activate_type: ActivationFunction = ActivationFunction.STEP,
+        f: Callable[[float], float] = lambda x: 1 if x > 0 else 0,
     ) -> None:
         self.weights = weights
         self.bias = bias
         self.threshold = threshold
-        self.activation_function = self.get_activation_function(activate_type)
-
-    def get_activation_function(self, activate_type: ActivationFunction) -> Callable:
-        if activate_type == ActivationFunction.IDENTITY:
-            return self.identity
-        elif activate_type == ActivationFunction.STEP:
-            return self.step
-        else:
-            raise ValueError(f"Unknown activation function: {activate_type}")
+        self.activation_function = f
 
     def activate(self, inputs: np.ndarray) -> float:
         s = np.dot(self.weights, inputs) + self.bias
         return self.activation_function(s)
-
-    @staticmethod
-    def identity(x: float) -> float:
-        return x
-
-    @staticmethod
-    def step(x: float) -> float:
-        return 1 if x > 0 else 0
 
 
 class Layer:
@@ -80,6 +58,11 @@ xor_neuron = NeuralNetwork(
             ]
         )
     ],
+)
+my_neuron = NeuralNetwork(
+    output_neuron=Neuron(
+        weights=np.array([-6, 4, 3]), bias=3.1, f=lambda x: 1 if x > 0.5 else 0
+    )
 )
 
 
