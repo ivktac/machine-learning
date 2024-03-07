@@ -1,5 +1,4 @@
 import numpy as np
-from neural import Neuron
 
 
 def sigmoid(x: float) -> float:
