@@ -1,60 +1,83 @@
 import numpy as np
 from typing import Callable
+from enum import Enum
 
 
-class ArtificalNeuron:
+class ActivationFunction(Enum):
+    IDENTITY = "identity"
+    STEP = "step"
+
+
+class Neuron:
     def __init__(
         self,
-        weights: list[float],
+        weights: np.ndarray,
+        bias: float = 0.0,
         threshold: float = 0.0,
-        activation_function: Callable[[float], float] | None = None,
-    ):
-        self.weights = np.array(weights)
+        activate_type: ActivationFunction = ActivationFunction.STEP,
+    ) -> None:
+        self.weights = weights
+        self.bias = bias
         self.threshold = threshold
-        self.activation_function = activation_function or self.linear_activation
+        self.activation_function = self.get_activation_function(activate_type)
 
-    def linear_activation(self, x: float):
+    def get_activation_function(self, activate_type: ActivationFunction) -> Callable:
+        if activate_type == ActivationFunction.IDENTITY:
+            return self.identity
+        elif activate_type == ActivationFunction.STEP:
+            return self.step
+        else:
+            raise ValueError(f"Unknown activation function: {activate_type}")
+
+    def activate(self, inputs: np.ndarray) -> float:
+        s = np.dot(self.weights, inputs) + self.bias
+        return self.activation_function(s)
+
+    @staticmethod
+    def identity(x: float) -> float:
         return x
 
-    def compute_weighted_sum(self, inputs: list[float]) -> float:
-        return np.dot(inputs, self.weights)
+    @staticmethod
+    def step(x: float) -> float:
+        return 1 if x > 0 else 0
 
-    def activate(self, inputs: list[float]):
-        weighted_sum = self.compute_weighted_sum(inputs)
-        return (
-            self.activation_function(weighted_sum)
-            if weighted_sum > self.threshold
-            else 0
-        )
+
+class Layer:
+    def __init__(self, neurons: list[Neuron] = []) -> None:
+        self.neurons = neurons
+
+    def add_neuron(self, neuron: Neuron) -> None:
+        self.neurons.append(neuron)
+
+    def activate(self, inputs: np.ndarray) -> np.ndarray:
+        return np.array([neuron.activate(inputs) for neuron in self.neurons])
 
 
 class NeuralNetwork:
-    def __init__(
-        self,
-        neuron: list[ArtificalNeuron],
-        hidden_layer: list[ArtificalNeuron] | None = None,
-    ):
-        self.output_layer = neuron
-        self.hidden_layer = hidden_layer
+    def __init__(self, output_neuron: Neuron, layers: list[Layer] = []) -> None:
+        self.output_neuron = output_neuron
+        self.layers = layers
 
-    def forward_propagation(self, inputs: list[float]) -> list[float]:
-        if hidden_layer := self.hidden_layer:
-            hidden_layer_outputs = [neuron.activate(inputs) for neuron in hidden_layer]
-            return [
-                neuron.activate(hidden_layer_outputs) for neuron in self.output_layer
+    def add_layer(self, layer: Layer) -> None:
+        self.layers.append(layer)
+
+    def forward_propagate(self, inputs: np.ndarray) -> float:
+        for layer in self.layers:
+            inputs = layer.activate(inputs)
+        return self.output_neuron.activate(inputs)
+
+
+or_neuron = Neuron(weights=np.array([1, 1]), bias=-0.5)
+not_neuron = Neuron(weights=np.array([-1]), bias=0.5)
+and_neuron = Neuron(weights=np.array([1, 1]), bias=-1.5)
+xor_neuron = NeuralNetwork(
+    output_neuron=Neuron(weights=np.array([1, 1]), bias=-0.5),
+    layers=[
+        Layer(
+            neurons=[
+                Neuron(weights=np.array([1, -1]), bias=-0.5),
+                Neuron(weights=np.array([-1, 1]), bias=-0.5),
             ]
-
-        return [neuron.activate(inputs) for neuron in self.output_layer]
-
-    def __repr__(self):
-        return f"NeuralNetwork(output_layer={self.output_layer}, hidden_layer={self.hidden_layer})"
-
-
-if __name__ == "__main__":
-    logical_and_network = NeuralNetwork(
-        neuron=[ArtificalNeuron([1, 1], 1.5, lambda x: 1 if x >= 1.5 else 0)]
-    )
-    print(logical_and_network.forward_propagation([0, 0]))  # [0]
-    print(logical_and_network.forward_propagation([0, 1]))  # [0]
-    print(logical_and_network.forward_propagation([1, 0]))  # [0]
-    print(logical_and_network.forward_propagation([1, 1]))  # [1]
+        )
+    ],
+)
