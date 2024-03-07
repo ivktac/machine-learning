@@ -59,11 +59,7 @@ xor_neuron = NeuralNetwork(
         )
     ],
 )
-my_neuron = NeuralNetwork(
-    output_neuron=Neuron(
-        weights=np.array([-6, 4, 3]), bias=3.1, f=lambda x: 1 if x > 0.5 else 0
-    )
-)
+my_neuron = Neuron(weights=np.array([-6.3, 4, 3]), bias=3.1)
 
 
 class SingleLayerPerception:
@@ -72,16 +68,30 @@ class SingleLayerPerception:
         self.bias = np.random.rand()
         self.learning_rate = learning_rate
 
-    def perdict(self, inputs):
+    def predict(self, inputs):
         return np.dot(inputs, self.weights) + self.bias
 
-    def train(self, training_inputs, training_labels, epochs=10000):
-        for _ in range(epochs):
+    def train(self, training_inputs, training_labels, epochs=10_000):
+        for epoch in range(epochs):
+            total_error = 0
+
             for inputs, label in zip(training_inputs, training_labels):
-                prediction = self.perdict(inputs)
+                prediction = self.predict(inputs)
                 error = prediction - label
-                self.weights -= self.learning_rate * error * inputs
-                self.bias -= self.learning_rate * error
+
+                gradients = error * inputs
+                bias_gradient = error
+
+                self.weights -= self.learning_rate * gradients
+                self.bias -= self.learning_rate * bias_gradient
+
+                total_error += error**2
+
+            if epoch % 1000 == 0:
+                print(f"Epoch: {epoch}, Error: {total_error}")
+
+            if total_error < 1e-5:
+                break
 
 
 if __name__ == "__main__":
@@ -102,7 +112,7 @@ if __name__ == "__main__":
     perception = SingleLayerPerception(input_size=3)
     perception.train(X_train, y_train)
 
-    predictions = [perception.perdict(x) for x in X_test]
+    predictions = [perception.predict(x) for x in X_test]
 
     print(f"Predicted values: {predictions}")
     print(f"Actual values: {y_test}")

@@ -29,7 +29,7 @@ def test_logical_xor():
 
 
 def test_logical_my():
-    assert my_neuron.forward_propagate(np.array([0, 0, 0])) == 1
-    assert my_neuron.forward_propagate(np.array([0, 1, 0])) == 1
-    assert my_neuron.forward_propagate(np.array([1, 0, 0])) == 0
-    assert my_neuron.forward_propagate(np.array([1, 1, 1])) == 1
+    assert my_neuron.activate(np.array([0, 0, 0])) == 1
+    assert my_neuron.activate(np.array([0, 1, 0])) == 1
+    assert my_neuron.activate(np.array([1, 0, 0])) == 0
+    assert my_neuron.activate(np.array([1, 1, 1])) == 1
