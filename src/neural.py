@@ -81,3 +81,45 @@ xor_neuron = NeuralNetwork(
         )
     ],
 )
+
+
+class SingleLayerPerception:
+    def __init__(self, input_size: int, learning_rate=0.01):
+        self.weights = np.random.rand(input_size)
+        self.bias = np.random.rand()
+        self.learning_rate = learning_rate
+
+    def perdict(self, inputs):
+        return np.dot(inputs, self.weights) + self.bias
+
+    def train(self, training_inputs, training_labels, epochs=10000):
+        for _ in range(epochs):
+            for inputs, label in zip(training_inputs, training_labels):
+                prediction = self.perdict(inputs)
+                error = prediction - label
+                self.weights -= self.learning_rate * error * inputs
+                self.bias -= self.learning_rate * error
+
+
+if __name__ == "__main__":
+    data = np.array([2.54, 5.28, 0.78, 5.72, 0.58, 4.65, 0.91, 5.80, 1.76, 5.67, 1.73, 5.70, 1.03, 5.00, 1.79])  # fmt: off
+    X = []
+    y = []
+
+    for i in range(len(data) - 3):
+        X.append(data[i : i + 3])
+        y.append(data[i + 3])
+
+    X_train = np.array(X[:10])
+    y_train = np.array(y[:10])
+
+    X_test = np.array(X[10:])
+    y_test = np.array(y[10:])
+
+    perception = SingleLayerPerception(input_size=3)
+    perception.train(X_train, y_train)
+
+    predictions = [perception.perdict(x) for x in X_test]
+
+    print(f"Predicted values: {predictions}")
+    print(f"Actual values: {y_test}")
