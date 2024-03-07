@@ -61,20 +61,25 @@ xor_neuron = NeuralNetwork(
 )
 
 
-class SingleLayerPerception:
-    def __init__(self, input_size: int, learning_rate=0.01):
-        self.weights = np.random.rand(input_size)
+class SingleLayerPerceptron:
+    def __init__(
+        self,
+        size: int,
+        learning_rate=0.01,
+    ):
+        self.weights = np.random.rand(size)
         self.bias = np.random.rand()
         self.learning_rate = learning_rate
 
     def predict(self, inputs):
-        return np.dot(inputs, self.weights) + self.bias
+        weighted_sum = np.dot(inputs, self.weights) + self.bias
+        return weighted_sum
 
-    def train(self, training_inputs, training_labels, epochs=10_000):
-        for epoch in range(epochs):
+    def fit(self, input_data, expected_data, epochs=10_000):
+        for _ in range(epochs):
             total_error = 0
 
-            for inputs, label in zip(training_inputs, training_labels):
+            for inputs, label in zip(input_data, expected_data):
                 prediction = self.predict(inputs)
                 error = prediction - label
 
@@ -85,12 +90,8 @@ class SingleLayerPerception:
                 self.bias -= self.learning_rate * bias_gradient
 
                 total_error += error**2
-
-            if epoch % 1000 == 0:
-                print(f"Epoch: {epoch}, Error: {total_error}")
-
-            if total_error < 1e-5:
-                break
+                if total_error < 1e-5:
+                    break
 
 
 if __name__ == "__main__":
@@ -108,10 +109,11 @@ if __name__ == "__main__":
     X_test = np.array(X[10:])
     y_test = np.array(y[10:])
 
-    perception = SingleLayerPerception(input_size=3)
-    perception.train(X_train, y_train)
+    print(X_train.shape)
+    perception = SingleLayerPerceptron(size=X_train.shape[1])
+    perception.fit(X_train, y_train)
 
-    predictions = [perception.predict(x) for x in X_test]
+    predictions = perception.predict(X_test)
 
     print(f"Predicted values: {predictions}")
     print(f"Actual values: {y_test}")
