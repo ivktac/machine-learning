@@ -29,7 +29,7 @@ def test_logical_xor():
 
 
 def test_logical_my():
-    my_neuron = Neuron(weights=np.array([-6.3, 4, 3]), bias=3.1)
+    my_neuron = Neuron(weights=np.array([-8.7, 5, 4.2]), bias=4.4)
 
     assert my_neuron.activate(np.array([0, 0, 0])) == 1
     assert my_neuron.activate(np.array([0, 1, 0])) == 1
