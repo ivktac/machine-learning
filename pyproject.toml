@@ -3,7 +3,7 @@ name = "my-data-learning"
 description = "A project to learn data science and machine learning"
 version = "0.0.1"
 requires-python = ">=3.11"
-dependencies = ["numpy", "ipykernel"]
+dependencies = ["numpy"]
 
 
 [project.optional-dependencies]
