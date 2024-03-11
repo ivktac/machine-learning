@@ -32,10 +32,15 @@ class NeuralNetwork:
         self.weights += np.dot(inputs.T, d_predicted_output) * self.learning_rate
         self.bias += np.sum(d_predicted_output) * self.learning_rate
 
+        return error
+
     def train(self, inputs, expected_output):
         for _ in range(self.iterations):
             self.feedforward(inputs)
-            self.backpropagation(inputs, expected_output)
+            error = self.backpropagation(inputs, expected_output)
+
+            if np.all(np.abs(error) < 1e-5):
+                break
 
     def predict(self, inputs):
         return self.feedforward(inputs)
