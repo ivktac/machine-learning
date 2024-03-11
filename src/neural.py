@@ -7,12 +7,10 @@ class Neuron:
         self,
         weights: np.ndarray,
         bias: float = 0.0,
-        threshold: float = 0.0,
         f: Callable[[float], float] = lambda x: 1 if x > 0 else 0,
     ) -> None:
         self.weights = weights
         self.bias = bias
-        self.threshold = threshold
         self.activation_function = f
 
     def activate(self, inputs: np.ndarray) -> float:
@@ -46,7 +44,7 @@ class NeuralNetwork:
 
 
 or_neuron = Neuron(weights=np.array([1, 1]), bias=-0.5)
-not_neuron = Neuron(weights=np.array([-1]), bias=0.5)
+not_neuron = Neuron(weights=np.array([-1.5]), bias=1)
 and_neuron = Neuron(weights=np.array([1, 1]), bias=-1.5)
 xor_neuron = NeuralNetwork(
     output_neuron=Neuron(weights=np.array([1, 1]), bias=-0.5),
