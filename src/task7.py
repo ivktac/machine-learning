@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from sklearn import linear_model
 
 plt.rcParams["figure.figsize"] = (3, 2)
 
@@ -7,7 +8,6 @@ X = np.c_[0.5, 1].T
 y = [0.5, 1]
 X_test = np.c_[0, 2].T
 
-from sklearn import linear_model
 
 regr = linear_model.LinearRegression()
 regr.fit(X, y)

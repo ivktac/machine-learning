@@ -1,20 +1,20 @@
 from sklearn.datasets import load_diabetes
 
-data = load_diabetes()
-
-X, y = data.data, data.target
-print(X.shape)
-
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import Ridge, Lasso
+
+import numpy as np
+from matplotlib import pyplot as plt
+
+data = load_diabetes()
+
+X, y = data.data, data.target  # type: ignore
+print(X.shape)
 
 for Model in [Ridge, Lasso]:
     model = Model()
     print("%s: %s" % (Model.__name__, cross_val_score(model, X, y).mean()))
 
-
-import numpy as np
-from matplotlib import pyplot as plt
 
 alphas = np.logspace(-3, -1, 30)
 
